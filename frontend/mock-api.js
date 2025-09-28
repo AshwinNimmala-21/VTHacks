@@ -15,26 +15,9 @@ class MockAPI {
     }
 
     async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`;
-        
-        try {
-            const response = await fetch(url, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                },
-                ...options
-            });
-            
-            if (response.ok) {
-                return await response.json();
-            } else {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-        } catch (error) {
-            console.warn(`API call failed, using mock data: ${error.message}`);
-            return this.getMockResponse(endpoint, options);
-        }
+        // Always use mock data for now to avoid crashes
+        console.log(`Using mock data for: ${endpoint}`);
+        return this.getMockResponse(endpoint, options);
     }
 
     getMockResponse(endpoint, options) {
@@ -116,15 +99,26 @@ class MockAPI {
 // Create global API instance
 window.api = new MockAPI();
 
-// Override fetch for API calls
+// Override fetch for API calls to prevent crashes
 const originalFetch = window.fetch;
 window.fetch = async (url, options = {}) => {
     if (url.includes('/api/')) {
         const endpoint = url.replace('https://woke-one.vercel.app', '');
-        return {
-            ok: true,
-            json: async () => await window.api.request(endpoint, options)
-        };
+        try {
+            const data = await window.api.request(endpoint, options);
+            return {
+                ok: true,
+                status: 200,
+                json: async () => data
+            };
+        } catch (error) {
+            console.error('Mock API error:', error);
+            return {
+                ok: false,
+                status: 500,
+                json: async () => ({ error: error.message })
+            };
+        }
     }
     return originalFetch(url, options);
 };
