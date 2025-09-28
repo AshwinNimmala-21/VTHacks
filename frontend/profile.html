@@ -387,7 +387,7 @@
 
       try {
         // Fetch user profile from database
-        const response = await fetch(`http://woke-one.vercel.app/profiles/${customerId}`);
+        const response = await fetch(`https://woke-one.vercel.app/api/profiles/${customerId}`);
         
         if (response.ok) {
           const profileData = await response.json();
@@ -497,7 +497,7 @@
         const newAddress = document.getElementById("editAddress").value;
 
         // Update name in database
-        const response = await fetch(`http://woke-one.vercel.app/profiles/${customerId}`, {
+        const response = await fetch(`https://woke-one.vercel.app/api/profiles/${customerId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -574,7 +574,7 @@
       const password = document.getElementById("loginPassword").value;
 
       try {
-        const res = await fetch("http://woke-one.vercel.app/login/customer", {
+        const res = await fetch("https://woke-one.vercel.app/api/login/customer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password })
@@ -612,7 +612,7 @@
       }
 
       try {
-        const res = await fetch(`http://woke-one.vercel.app/register/${userType}`, {
+        const res = await fetch(`https://woke-one.vercel.app/api/register/${userType}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)

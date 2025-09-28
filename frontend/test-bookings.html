@@ -57,7 +57,7 @@
             
             if (customerId) {
                 try {
-                    const response = await fetch(`http://woke-one.vercel.app/bookings?customer_id=${customerId}`);
+                    const response = await fetch(`https://woke-one.vercel.app/api/bookings?customer_id=${customerId}`);
                     const data = await response.json();
                     
                     const bookings = data.bookings || [];
@@ -94,7 +94,7 @@
             
             for (const userId of testUsers) {
                 try {
-                    const response = await fetch(`http://woke-one.vercel.app/bookings?customer_id=${userId}`);
+                    const response = await fetch(`https://woke-one.vercel.app/api/bookings?customer_id=${userId}`);
                     const data = await response.json();
                     const bookings = data.bookings || [];
                     

@@ -381,8 +381,8 @@
 
         // Get available tasks and taskers
         const [tasksResponse, taskersResponse] = await Promise.all([
-          fetch(`http://woke-one.vercel.app/tasks?customer_id=${customerId}`),
-          fetch(`http://woke-one.vercel.app/taskers`)
+          fetch(`https://woke-one.vercel.app/api/tasks?customer_id=${customerId}`),
+          fetch(`https://woke-one.vercel.app/api/taskers`)
         ]);
 
         const tasksData = await tasksResponse.json();

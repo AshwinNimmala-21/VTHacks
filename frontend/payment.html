@@ -448,7 +448,7 @@
 
     async function fetchBookingFromAPI(bookingId) {
       try {
-        const response = await fetch(`http://woke-one.vercel.app/bookings/${bookingId}`);
+        const response = await fetch(`https://woke-one.vercel.app/api/bookings/${bookingId}`);
         if (response.ok) {
           const data = await response.json();
           bookingData = data.booking;
@@ -552,7 +552,7 @@
         }
 
         // Get available taskers
-        const taskersResponse = await fetch("http://woke-one.vercel.app/taskers");
+            const taskersResponse = await fetch("https://woke-one.vercel.app/api/taskers");
         const taskersData = await taskersResponse.json();
 
         // Find matching tasker
@@ -579,7 +579,7 @@
         if (!taskId) {
           // Create a new task for the service
           const serviceName = params.get('service') || 'Service';
-          const taskResponse = await fetch("http://woke-one.vercel.app/tasks", {
+              const taskResponse = await fetch("https://woke-one.vercel.app/api/tasks", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -595,7 +595,7 @@
             taskId = taskData.task.id;
           } else {
             // Fallback to first available task
-            const tasksResponse = await fetch(`http://woke-one.vercel.app/tasks?customer_id=${customerId}`);
+                const tasksResponse = await fetch(`https://woke-one.vercel.app/api/tasks?customer_id=${customerId}`);
             const tasksData = await tasksResponse.json();
             if (tasksData.tasks && tasksData.tasks.length > 0) {
               taskId = tasksData.tasks[0].id;
@@ -606,7 +606,7 @@
         }
 
         // Create booking
-        const response = await fetch("http://woke-one.vercel.app/bookings", {
+        const response = await fetch("https://woke-one.vercel.app/api/bookings", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

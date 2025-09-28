@@ -110,7 +110,7 @@
             const password = document.getElementById('password').value;
             
             try {
-                const response = await fetch('http://woke-one.vercel.app/login/provider', {
+                const response = await fetch('https://woke-one.vercel.app/api/login/provider', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

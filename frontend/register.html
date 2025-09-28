@@ -92,7 +92,7 @@
       }
 
       try {
-        const res = await fetch(`http://woke-one.vercel.app/register/${userType}`, {
+        const res = await fetch(`https://woke-one.vercel.app/api/register/${userType}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)

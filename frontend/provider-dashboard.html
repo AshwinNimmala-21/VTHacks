@@ -251,7 +251,7 @@
 
             try {
                 // Load bookings
-                const bookingsResponse = await fetch(`http://woke-one.vercel.app/bookings?provider_id=${providerId}`);
+                const bookingsResponse = await fetch(`https://woke-one.vercel.app/api/bookings?provider_id=${providerId}`);
                 const bookingsData = await bookingsResponse.json();
                 
                 if (bookingsResponse.ok) {
@@ -261,7 +261,7 @@
                 }
 
                 // Load provider profile
-                const profileResponse = await fetch(`http://woke-one.vercel.app/profiles/${providerId}`);
+                const profileResponse = await fetch(`https://woke-one.vercel.app/api/profiles/${providerId}`);
                 const profileData = await profileResponse.json();
                 
                 if (profileResponse.ok) {
