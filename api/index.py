@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from supabase import create_client, Client
 import os
 from typing import Optional
 
@@ -17,16 +16,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Supabase client
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://civjbgjrknhaknietyth.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "sb_secret_HEvjYo69xYMQ6dfBDKdz-A_sNx3CAKQ")
-
-try:
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    print("Supabase client created successfully")
-except Exception as e:
-    print(f"Error creating Supabase client: {e}")
-    supabase = None
+# Mock data for now to avoid Supabase issues
+mock_data = {
+    "users": [
+        {"id": "user1", "email": "test@example.com", "password": "password123", "name": "Test User"}
+    ],
+    "tasks": [],
+    "bookings": [],
+    "taskers": [
+        {"id": "tasker1", "name": "John Smith", "skills": ["Cleaning"], "hourly_rate": 25, "bio": "Professional cleaner"},
+        {"id": "tasker2", "name": "Sarah Johnson", "skills": ["Beauty"], "hourly_rate": 35, "bio": "Beauty expert"}
+    ]
+}
 
 # Pydantic models
 class CustomerRegister(BaseModel):
@@ -57,31 +58,25 @@ def read_root():
 @app.post("/register/customer")
 def register_customer(data: CustomerRegister):
     try:
-        if not supabase:
-            raise HTTPException(status_code=500, detail="Database connection failed")
+        # Check if user already exists
+        existing_user = next((u for u in mock_data["users"] if u["email"] == data.email), None)
+        if existing_user:
+            raise HTTPException(status_code=400, detail="User already exists")
         
-        # Create user in Supabase Auth
-        user = supabase.auth.sign_up({"email": data.email, "password": data.password})
-        
-        if not user.user:
-            raise HTTPException(status_code=400, detail="Failed to create user")
-        
-        # Create profile
-        profile_data = {
-            "id": user.user.id,
-            "name": data.name,
-            "role": "customer"
+        # Create new user
+        new_user = {
+            "id": f"user{len(mock_data['users']) + 1}",
+            "email": data.email,
+            "password": data.password,
+            "name": data.name
         }
-        
-        profile_response = supabase.table("profiles").insert(profile_data).execute()
-        
-        if not profile_response.data:
-            raise HTTPException(status_code=400, detail="Failed to create profile")
+        mock_data["users"].append(new_user)
         
         return {
             "message": "Customer registered successfully",
-            "user_id": user.user.id,
-            "email": user.user.email
+            "user_id": new_user["id"],
+            "email": new_user["email"],
+            "name": new_user["name"]
         }
         
     except Exception as e:
@@ -91,29 +86,19 @@ def register_customer(data: CustomerRegister):
 @app.post("/login/customer")
 def login_customer(data: CustomerLogin):
     try:
-        if not supabase:
-            raise HTTPException(status_code=500, detail="Database connection failed")
+        # Find user in mock data
+        user = next((u for u in mock_data["users"] if u["email"] == data.email and u["password"] == data.password), None)
         
-        # Login user
-        user = supabase.auth.sign_in_with_password({"email": data.email, "password": data.password})
-        
-        if not user.user:
+        if not user:
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        
-        # Get profile
-        profile_response = supabase.table("profiles").select("*").eq("id", user.user.id).execute()
-        
-        if not profile_response.data:
-            raise HTTPException(status_code=404, detail="Profile not found")
-        
-        profile = profile_response.data[0]
         
         return {
             "message": "Login successful",
-            "user_id": user.user.id,
-            "email": user.user.email,
-            "name": profile.get("name", ""),
-            "role": profile.get("role", "customer")
+            "user_id": user["id"],
+            "email": user["email"],
+            "name": user["name"],
+            "user_name": user["name"],  # For compatibility
+            "role": "customer"
         }
         
     except Exception as e:
@@ -123,20 +108,18 @@ def login_customer(data: CustomerLogin):
 @app.post("/tasks")
 def create_task(data: TaskCreate):
     try:
-        if not supabase:
-            raise HTTPException(status_code=500, detail="Database connection failed")
-        
-        response = supabase.table("tasks").insert({
+        # Create new task in mock data
+        new_task = {
+            "id": len(mock_data["tasks"]) + 1,
             "title": data.title,
             "description": data.description,
             "customer_id": data.customer_id,
-            "status": data.status
-        }).execute()
+            "status": data.status,
+            "created_at": "2024-01-01T00:00:00Z"
+        }
+        mock_data["tasks"].append(new_task)
         
-        if not response.data:
-            raise HTTPException(status_code=400, detail="Failed to create task")
-        
-        return {"message": "Task created", "task": response.data[0]}
+        return {"message": "Task created", "task": new_task}
         
     except Exception as e:
         print(f"Task creation error: {e}")
@@ -145,15 +128,7 @@ def create_task(data: TaskCreate):
 @app.get("/taskers")
 def get_taskers():
     try:
-        if not supabase:
-            raise HTTPException(status_code=500, detail="Database connection failed")
-        
-        response = supabase.table("profiles").select("id,name,skills,hourly_rate,bio").eq("role", "tasker").execute()
-        
-        if not response.data:
-            return {"taskers": []}
-        
-        return {"taskers": response.data}
+        return {"taskers": mock_data["taskers"]}
         
     except Exception as e:
         print(f"Taskers fetch error: {e}")
@@ -162,20 +137,18 @@ def get_taskers():
 @app.post("/bookings")
 def create_booking(data: BookingCreate):
     try:
-        if not supabase:
-            raise HTTPException(status_code=500, detail="Database connection failed")
-        
-        response = supabase.table("bookings").insert({
+        # Create new booking in mock data
+        new_booking = {
+            "id": len(mock_data["bookings"]) + 1,
             "task_id": data.task_id,
             "customer_id": data.customer_id,
             "tasker_id": data.tasker_id,
-            "status": "pending"
-        }).execute()
+            "status": "pending",
+            "created_at": "2024-01-01T00:00:00Z"
+        }
+        mock_data["bookings"].append(new_booking)
         
-        if not response.data:
-            raise HTTPException(status_code=400, detail="Failed to create booking")
-        
-        return {"message": "Booking created", "booking": response.data[0]}
+        return {"message": "Booking created", "booking": [new_booking]}
         
     except Exception as e:
         print(f"Booking creation error: {e}")
@@ -184,17 +157,18 @@ def create_booking(data: BookingCreate):
 @app.get("/bookings")
 def get_bookings(customer_id: str):
     try:
-        if not supabase:
-            raise HTTPException(status_code=500, detail="Database connection failed")
+        # Filter bookings by customer_id
+        customer_bookings = [b for b in mock_data["bookings"] if b["customer_id"] == customer_id]
         
-        response = supabase.table("bookings").select(
-            "id,task_id,customer_id,status,created_at,task:tasks(title),tasker:profiles!bookings_tasker_id_fkey(name)"
-        ).eq("customer_id", customer_id).execute()
+        # Add task and tasker info
+        for booking in customer_bookings:
+            task = next((t for t in mock_data["tasks"] if t["id"] == booking["task_id"]), None)
+            tasker = next((t for t in mock_data["taskers"] if t["id"] == booking["tasker_id"]), None)
+            
+            booking["task"] = {"title": task["title"]} if task else {"title": "Unknown Task"}
+            booking["tasker"] = {"name": tasker["name"]} if tasker else {"name": "Unknown Tasker"}
         
-        if not response.data:
-            return {"bookings": []}
-        
-        return {"bookings": response.data}
+        return {"bookings": customer_bookings}
         
     except Exception as e:
         print(f"Bookings fetch error: {e}")

@@ -36,15 +36,17 @@
       try {
         console.log("Attempting login with:", email);
         
-        // Use mock API directly to avoid fetch issues
-        const data = await window.api.request('/login/customer', {
+        const res = await fetch("https://woke-one.vercel.app/api/login/customer", {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password })
         });
         
+        console.log("Response status:", res.status);
+        const data = await res.json();
         console.log("Response data:", data);
         
-        if (data.user_id) {
+        if (res.ok) {
           localStorage.setItem("customerId", data.user_id);
           localStorage.setItem("userName", data.name || data.user_name || "User");
           console.log("Login successful for user:", data.name || data.user_name, "ID:", data.user_id);
