@@ -33,7 +33,7 @@
       const password = document.getElementById("password").value;
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/login/customer", {
+        const res = await fetch("http://woke-one.vercel.app/login/customer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password })

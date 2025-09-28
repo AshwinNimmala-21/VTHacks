@@ -243,7 +243,7 @@
             if (!providerId) return;
 
             try {
-                const response = await fetch(`http://127.0.0.1:8000/bookings?provider_id=${providerId}`);
+                const response = await fetch(`http://woke-one.vercel.app/bookings?provider_id=${providerId}`);
                 const data = await response.json();
                 
                 if (response.ok) {

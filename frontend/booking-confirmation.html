@@ -159,7 +159,7 @@
 
     async function fetchBookingDetails(bookingId) {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/bookings/${bookingId}`);
+        const response = await fetch(`http://woke-one.vercel.app/bookings/${bookingId}`);
         if (response.ok) {
           const data = await response.json();
           displayBookingDetails(data.booking);

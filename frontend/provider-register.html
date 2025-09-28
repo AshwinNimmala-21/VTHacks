@@ -191,7 +191,7 @@
             localStorage.setItem('providerPhone', formData.phone);
             
             try {
-                const response = await fetch('http://127.0.0.1:8000/register/provider', {
+                const response = await fetch('http://woke-one.vercel.app/register/provider', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

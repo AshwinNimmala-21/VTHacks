@@ -170,7 +170,7 @@
             showLoadingState();
 
             try {
-                const response = await fetch(`http://127.0.0.1:8000/bookings?provider_id=${providerId}`);
+                const response = await fetch(`http://woke-one.vercel.app/bookings?provider_id=${providerId}`);
                 const data = await response.json();
                 
                 if (response.ok) {
@@ -305,7 +305,7 @@
         // Accept booking
         async function acceptBooking(bookingId) {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/bookings/${bookingId}`, {
+                const response = await fetch(`http://woke-one.vercel.app/bookings/${bookingId}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -334,7 +334,7 @@
             }
             
             try {
-                const response = await fetch(`http://127.0.0.1:8000/bookings/${bookingId}`, {
+                const response = await fetch(`http://woke-one.vercel.app/bookings/${bookingId}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -359,7 +359,7 @@
         // Complete booking
         async function completeBooking(bookingId) {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/bookings/${bookingId}`, {
+                const response = await fetch(`http://woke-one.vercel.app/bookings/${bookingId}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
