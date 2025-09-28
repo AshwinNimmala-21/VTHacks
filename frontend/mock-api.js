@@ -68,6 +68,7 @@ class MockAPI {
                         user_id: user.id,
                         email: user.email,
                         name: user.name,
+                        user_name: user.name, // Also include user_name for compatibility
                         role: user.role
                     };
                 } else {

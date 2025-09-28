@@ -34,19 +34,25 @@
       const password = document.getElementById("password").value;
 
       try {
+        console.log("Attempting login with:", email);
         const res = await fetch("https://woke-one.vercel.app/api/login/customer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password })
         });
+        
+        console.log("Response status:", res.status);
         const data = await res.json();
+        console.log("Response data:", data);
+        
         if (res.ok) {
           localStorage.setItem("customerId", data.user_id);
-          localStorage.setItem("userName", data.user_name || "User");
-          console.log("Login successful for user:", data.user_name, "ID:", data.user_id);
+          localStorage.setItem("userName", data.name || data.user_name || "User");
+          console.log("Login successful for user:", data.name || data.user_name, "ID:", data.user_id);
           alert("Login successful!");
           window.location.href = "index.html"; // Redirect to main landing page
         } else {
+          console.error("Login failed:", data);
           alert(data.detail || "Login failed");
         }
       } catch (err) {
